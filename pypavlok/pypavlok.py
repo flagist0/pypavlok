@@ -1,5 +1,5 @@
 import logging
-from gattlib import GATTRequester
+from gattlib import DiscoveryService, GATTRequester
 
 class PyPavlok(GATTRequester):
     '''Bluetooth controller for Pavlok
@@ -16,11 +16,12 @@ class PyPavlok(GATTRequester):
         'firmware_revision' : '00002a26-0000-1000-8000-00805f9b34fb'
     }
 
-    def __init__(self, addr, device='hci0', debug=False, **connect_kwargs):
+    def __init__(self, addr=None, device='hci0', debug=False, **connect_kwargs):
         '''
-        @param addr: MAC address of Pavlok device
-        @param device: host Bluetooth interface
-        @param debug: debug logging, disabled by default
+        @param addr (optional): MAC address of Pavlok device
+                                If not passed, will be discovered with DiscoveryService (requires root privileges)
+        @param device (optional): host Bluetooth interface ('hci0' by default)
+        @param debug (optional): debug logging (disabled by default)
         @param connect_kwargs: keyword arguments (security_level, channel_type, mtu, psm) to pass to GATTRequester.connect
                                security_level: 'low' (default), 'medium', 'high'
                                channel_type: 'public' (default), 'random'
@@ -28,6 +29,10 @@ class PyPavlok(GATTRequester):
                                psm: integer
         '''
         self._init_logging(debug)
+
+        if not addr:
+            addr = self._get_pavlok_mac_addr(device)
+            assert addr, 'Could not find Pavlok device'
 
         GATTRequester.__init__(self, addr, False, device) #GATTRequester is an old-style class
         if connect_kwargs:
@@ -131,3 +136,12 @@ class PyPavlok(GATTRequester):
             logging.basicConfig()
         self.logger = logging.getLogger('pypavlok')
         self.logger.setLevel(logging.DEBUG if enable_debug else logging.INFO)
+
+    def _get_pavlok_mac_addr(self, device):
+        'Find Pavlok, return its MAC address'
+        service = DiscoveryService(device)
+        devices = service.discover(3) #3 seconds timeout
+        for addr, name in devices.items():
+            if name.startswith('Pavlok'):
+                self.logger.debug('Found Pavlok with MAC address %s', addr)
+                return addr
