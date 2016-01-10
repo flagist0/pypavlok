@@ -29,8 +29,8 @@ Be sure to install gattlib dependencies: boost-python, boost-thread and glib2
 Usage
 --------------
 >>> from pypavlok import PyPavlok
->>> mac_addr = '00:07:80:B5:9A:31' #MAC address of your Pavlok
->>> pavlok = PyPavlok(mac_addr, 'hci0') #MAC addr and Bluetooth interface name, hci0 is a default value
+>>> pavlok = PyPavlok() #If MAC address is not specified, it will be found using service discovery (requires root privileges)
+>>> pavlok = PyPavlok('00:07:80:B5:9A:31', 'hci0') #Or pass MAC address (doesn't require special permissions)
 >>> pavlok.battery_level
 95
 >>> pavlok.shock()
