@@ -13,9 +13,17 @@ Requirements
 --------------
 * Bluetooth 4 compatible adapter (Pavlok uses Bluetooth Low Energy)
 * Bluez
-* gattlib to interface gatttool. Be sure to install boost-python, boost-thread and glib2 as its dependencies
+* gattlib to interface gatttool
 * Python 2.7
 * Linux (I haven't tested the code with anything else)
+
+--------------
+Installation
+--------------
+Use pip:
+    pip install pypavlok
+
+Be sure to install gattlib dependencies: boost-python, boost-thread and glib2
 
 --------------
 Usage
@@ -83,9 +91,9 @@ Search for BLE devices:
 
 Try to connect to Pavlok with gatttool:
 
-$ gatttool -b <MAC address> -I
-
 .. code-block:: console
+
+    $ gatttool -b <MAC address> -I
 
     [<MAC address>][LE]> connect
 
