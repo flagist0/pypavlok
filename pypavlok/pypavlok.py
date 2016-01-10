@@ -21,17 +21,20 @@ class PyPavlok(GATTRequester):
         @param addr: MAC address of Pavlok device
         @param device: host Bluetooth interface
         @param debug: debug logging, disabled by default
-        @param connect_kwargs: keyword arguments to pass to GATTRequester.connect_kwarg.
-                               If set, will call GATTRequester.connect explicitly (it will require root privileges, it is a bug!)
+        @param connect_kwargs: keyword arguments (security_level, channel_type, mtu, psm) to pass to GATTRequester.connect
+                               security_level: 'low' (default), 'medium', 'high'
+                               channel_type: 'public' (default), 'random'
+                               mtu: integer
+                               psm: integer
         '''
         self._init_logging(debug)
 
-        GATTRequester.__init__(self, addr, not bool(connect_kwargs), device) #GATTRequester is an old-style class
+        GATTRequester.__init__(self, addr, False, device) #GATTRequester is an old-style class
         if connect_kwargs:
-            self.logger.debug('Got custom arguments for self.connect: %s', connect_kwargs)
-            self.connect(wait=True, **connect_kwargs)
-
+            self.logger.debug('Got keyword arguments for self.connect: %s', connect_kwargs)
+        self.connect(wait=False, **connect_kwargs) #Blocking connect() is better, but it would require root privileges
         self._wait_until_connected()
+
         characteristics = self.discover_characteristics()
         self.logger.debug('GATT characteristics: %s', characteristics)
         #Find matching value handles for service UUIDs
@@ -114,11 +117,11 @@ class PyPavlok(GATTRequester):
         '''Wait until connected. After 10 attempts throws an exception
         '''
         from time import sleep
-        for _ in range(10):
+        for _ in range(20):
             if self.is_connected():
                 break
             else:
-                sleep(1)
+                sleep(0.5)
         else:
             raise RuntimeError('Cannot connect')
 
