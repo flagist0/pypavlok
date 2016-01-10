@@ -2,22 +2,20 @@
 pypavlok
 ========
 
-Unofficial Python Bluetooth controller module for Pavlok
+Unofficial Python Bluetooth Pavlok API
 
-Official `Pavlok API <https://github.com/EastCoastProduct/pavlokjs>`_ makes requests to cloud service to send message to your tablet which will send Bluetooth command to your device. Maybe it works for tablet apps, but it is a quite clumsy way to zap people.
+Official `Pavlok API <https://github.com/EastCoastProduct/pavlokjs>`_ makes requests to cloud service to send message to your tablet which will send Bluetooth command to your device. Maybe it works for tablet apps, but it is a quite clumsy way to zap people. 
+
+This package controls Pavlok directly with Bluetooth commands. 
 
 --------------
 Requirements
 --------------
 * Bluetooth 4 compatible adapter (Pavlok uses Bluetooth Low Energy)
 * Bluez
-* gattlib to interface gatttool
-
-  Be sure to install boost-python, boost-thread and glib2 as its dependencies
+* gattlib to interface gatttool. Be sure to install boost-python, boost-thread and glib2 as its dependencies
 * Python 2.7
-* Linux 
-
-  I haven't tested with anything else
+* Linux (I haven't tested the code with anything else)
 
 --------------
 Usage
@@ -38,57 +36,69 @@ Usage
 '2.4.28'
 
 All action methods (shock, vibrate, led, beep) have common set of parameters:
+
 * level: discharge percents for shock(), tone for beep(), vibration speed for vibrate(), not used in led(). Default: 50
+
 * count: number of repetitions. Default: 1
+
 * duration_on: duration of action in milliseconds (<= 5 sec). Default: 1 sec
+
 * duration_off: if count > 0, set the interval between repetitions in milliseconds (<= 5 sec). Default: 1 sec
+
 
 --------------------
 Checking your setup
 --------------------
+
 Check if your bluetooth adapter is up:
+
 .. code-block:: console
 
-$ sudo hciconfig
+    $ sudo hciconfig
 
-<device name> *hci0*>:   Type: BR/EDR  Bus: USB
+    <device name> hci0:   Type: BR/EDR  Bus: USB
 
-...
+    <device status> DOWN
 
-<device status> *DOWN*
 
-If it's down run:
-::
-$ sudo hciconfig <device name>
+If the status is down, run:
+
+.. code-block:: console
+
+    $ sudo hciconfig <device name> up
+
 
 Search for BLE devices:
 
-$ sudo hcitool lescan
+.. code-block:: console
 
-LE Scan ...
+    $ sudo hcitool lescan
 
-<MAC address like xx:xx:xx:xx:xx:xx> Pavlok-xxxx
+    LE Scan ...
 
-Ctrl-C
+    <MAC address like xx:xx:xx:xx:xx:xx> Pavlok-xxxx
+
+    Ctrl-C
 
 
 Try to connect to Pavlok with gatttool:
-::
+
 $ gatttool -b <MAC address> -I
 
-[<MAC address>][LE]> connect
+.. code-block:: console
 
-Attempting to connect to <MAC address>
+    [<MAC address>][LE]> connect
 
-Connection successful
+    Attempting to connect to <MAC address>
 
-[<MAC address>][LE]> primary
+    Connection successful
 
-attr handle: 0x0001, end grp handle: 0x0007 uuid: 00001800-0000-1000-8000-00805f9b34fb
+    [<MAC address>][LE]> primary
 
-attr handle: 0x0008, end grp handle: 0x001a uuid: 0000180a-0000-1000-8000-00805f9b34fb
+    attr handle: 0x0001, end grp handle: 0x0007 uuid: 00001800-0000-1000-8000-00805f9b34fb
 
-...
+    attr handle: 0x0008, end grp handle: 0x001a uuid: 0000180a-0000-1000-8000-00805f9b34fb
+
 
 If you got to this point, everything should work
 
