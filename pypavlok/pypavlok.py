@@ -16,14 +16,21 @@ class PyPavlok(GATTRequester):
         'firmware_revision' : '00002a26-0000-1000-8000-00805f9b34fb'
     }
 
-    def __init__(self, addr, device='hci0', debug=False):
+    def __init__(self, addr, device='hci0', debug=False, **connect_kwargs):
         '''
         @param addr: MAC address of Pavlok device
         @param device: host Bluetooth interface
         @param debug: debug logging, disabled by default
+        @param connect_kwargs: keyword arguments to pass to GATTRequester.connect_kwarg.
+                               If set, will call GATTRequester.connect explicitly (it will require root privileges, it is a bug!)
         '''
         self._init_logging(debug)
-        GATTRequester.__init__(self, addr, True, device) #GATTRequester is an old-style class
+
+        GATTRequester.__init__(self, addr, not bool(connect_kwargs), device) #GATTRequester is an old-style class
+        if connect_kwargs:
+            self.logger.debug('Got custom arguments for self.connect: %s', connect_kwargs)
+            self.connect(wait=True, **connect_kwargs)
+
         self._wait_until_connected()
         characteristics = self.discover_characteristics()
         self.logger.debug('GATT characteristics: %s', characteristics)
@@ -105,9 +112,6 @@ class PyPavlok(GATTRequester):
 
     def _wait_until_connected(self):
         '''Wait until connected. After 10 attempts throws an exception
-        It is really ugly, but it is a workaround for gattlib issue: https://bitbucket.org/OscarAcena/pygattlib/issues/25/ :
-        connect() can be blocking and non-blocking. Default version, called from GATTRequester constructor, is non-blocking, so we have to wait.
-        An alternative would be to blockingly connect() outside of constructor, but for some unknown reason it requires root priveleges!
         '''
         from time import sleep
         for _ in range(10):
