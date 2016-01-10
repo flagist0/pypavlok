@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pypavlok',
-      version='0.3',
+      version='0.4',
       description='Unofficial Bluetooth controller for Pavlok',
       url='http://github.com/flagist0/pypavlok',
       author='Alexander Presnyakov',

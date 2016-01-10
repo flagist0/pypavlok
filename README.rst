@@ -110,4 +110,4 @@ Try to connect to Pavlok with gatttool:
 
 If you got to this point, everything should work
 
-If you encounter problems with Pavlok, try pushing The Zap Button for about 15 seconds -- it will blink, vibrate and reset
+If you encounter problems with Pavlok, try pressing The Zap Button for about 15 seconds -- it will blink, vibrate and reset
