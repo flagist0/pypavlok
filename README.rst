@@ -43,7 +43,7 @@ Usage
 >>> pavlok.firmware_revision
 '2.4.28'
 
-All action methods (shock, vibrate, led, beep) have common set of parameters:
+All action methods (shock, vibrate, led, beep) share common set of parameters:
 
 * level: discharge percents for shock(), tone for beep(), vibration speed for vibrate(), not used in led(). Default: 50
 

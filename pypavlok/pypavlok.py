@@ -1,3 +1,4 @@
+import logging
 from gattlib import GATTRequester
 
 class PyPavlok(GATTRequester):
@@ -15,17 +16,22 @@ class PyPavlok(GATTRequester):
         'firmware_revision' : '00002a26-0000-1000-8000-00805f9b34fb'
     }
 
-    def __init__(self, addr, device='hci0'):
+    def __init__(self, addr, device='hci0', debug=False):
         '''
         @param addr: MAC address of Pavlok device
-        @param device (optional): host Bluetooth device
+        @param device: host Bluetooth interface
+        @param debug: debug logging, disabled by default
         '''
+        self._init_logging(debug)
         GATTRequester.__init__(self, addr, True, device) #GATTRequester is an old-style class
         self._wait_until_connected()
         characteristics = self.discover_characteristics()
+        self.logger.debug('GATT characteristics: %s', characteristics)
         #Find matching value handles for service UUIDs
         self.handles = {name:filter(lambda e: e['uuid'] == uuid, characteristics)[0]['value_handle']\
                         for name, uuid in self.service_uuids.items()}
+        self.logger.debug('GATT value handles: %s', self.handles)
+        self.logger.debug('Hardware revision: %s, firmware revision: %s', self.hardware_revision, self.firmware_revision)
 
     @property
     def battery_level(self):
@@ -34,7 +40,7 @@ class PyPavlok(GATTRequester):
 
     def shock(self, level=50, count=1, duration_on=1000, duration_off=1000):
         '''Shock the user
-        All action methods (shock, vibrate, beep and led) accept the same set of parameters:
+        All action methods (shock, vibrate, beep and led) share common parameters:
         @param level: level of action in percents
         @param count: number of repetitions
         @param duration_on: duration of action in milliseconds (<= 5 sec)
@@ -94,7 +100,7 @@ class PyPavlok(GATTRequester):
     def write_array_by_handle(self, handle, *args):
         'Handy to pack list of arguments into a byte string and send it into the handle'
         data = str(bytearray(*args))
-        #print 'handle: %d, args: %s, data: %s' % (handle, args, ''.join(['%02x' % ord(c) for c in data]))
+        self.logger.debug('write array: handle: %d, args: %s, encoded data: %s', handle, args, ''.join(['%02x' % ord(c) for c in data]))
         self.write_by_handle(handle, data)
 
     def _wait_until_connected(self):
@@ -111,3 +117,10 @@ class PyPavlok(GATTRequester):
                 sleep(1)
         else:
             raise RuntimeError('Cannot connect')
+
+    def _init_logging(self, enable_debug):
+        'Initialize logger'
+        if not logging.root.handlers:
+            logging.basicConfig()
+        self.logger = logging.getLogger('pypavlok')
+        self.logger.setLevel(logging.DEBUG if enable_debug else logging.INFO)
