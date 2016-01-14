@@ -42,6 +42,12 @@ Usage
 >>> pavlok.vibrate()
 >>> pavlok.firmware_revision
 '2.4.28'
+>>> pp.is_connected() #PyPavlok inherits from GATTRequester
+True
+>>> pp.disconnect()
+>>> pp.is_connected()
+False
+
 
 All action methods (shock, vibrate, led, beep) share common set of parameters:
 
