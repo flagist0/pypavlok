@@ -4,7 +4,7 @@ pypavlok
 
 Unofficial Python Bluetooth Pavlok API
 
-Official `Pavlok API <https://github.com/EastCoastProduct/pavlokjs>`_ makes requests to cloud service to send message to your tablet which will send Bluetooth command to your device. Maybe it works for tablet apps, but it is a quite clumsy way to zap people. 
+Official `Pavlok API <http://pavlok-mvp.herokuapp.com/docs/index.html>`_ makes requests to cloud service to send message to your tablet which will send Bluetooth command to your device. It works for tablet apps, but it is a very *indirect* way to zap people.
 
 This package controls Pavlok directly with Bluetooth commands. 
 
@@ -116,4 +116,15 @@ Try to connect to Pavlok with gatttool:
 
 If you got to this point, everything should work
 
-If you encounter problems with Pavlok, try pressing The Zap Button for about 15 seconds -- it will blink, vibrate and reset
+---------------
+Troubleshooting
+---------------
+
+* If you get error `RuntimeError: Characteristic value/descriptor operation failed: Attribute requires authentication before read/write`, pass additional parameter `security_level='medium'` to PyPavlok.__init__:
+
+  >>> pavlok = PyPavlok(security_level='medium')
+
+* Pavlok has a reset function: try pressing The Zap Button for about 15 seconds
+
+* If you cannot connect to device, try to connect with gatttool, it will help you understand if the problem is with pypavlok or with Bluetooth stack.
+  If you get error like `GLib-WARNING **: Invalid file descriptor`, remove directory `/var/lib/bluetooth/<your_bluetooth_adapter_mac>` and restart bluetooth service
