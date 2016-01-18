@@ -120,11 +120,16 @@ If you got to this point, everything should work
 Troubleshooting
 ---------------
 
-* If you get error `RuntimeError: Characteristic value/descriptor operation failed: Attribute requires authentication before read/write`, pass additional parameter `security_level='medium'` to PyPavlok.__init__:
+* Pavlok has a reset function: try pressing The Zap Button for about 15 seconds
+
+* If you get error ``RuntimeError: Characteristic value/descriptor operation failed: Attribute requires authentication before read/write``, pass additional parameter ``security_level='medium'`` to PyPavlok.__init__:
 
   >>> pavlok = PyPavlok(security_level='medium')
 
-* Pavlok has a reset function: try pressing The Zap Button for about 15 seconds
-
 * If you cannot connect to device, try to connect with gatttool, it will help you understand if the problem is with pypavlok or with Bluetooth stack.
-  If you get error like `GLib-WARNING **: Invalid file descriptor`, remove directory `/var/lib/bluetooth/<your_bluetooth_adapter_mac>` and restart bluetooth service
+
+  If you get error like ``GLib-WARNING: Invalid file descriptor``, remove directory ``/var/lib/bluetooth/<your_bluetooth_adapter_mac>`` and restart bluetooth service
+
+* If you updated gattlib dependencies and it stoped working, `pip install --force-reinstall` won't help, because compiled version of gattlib is in pip cache and is not recompiled.
+
+  Remove the compiled library from pip cache -- search for gattlib.so in /root/.cache
