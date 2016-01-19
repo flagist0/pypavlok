@@ -8,6 +8,7 @@ setup(name='pypavlok',
       author_email='flagist0@gmail.com',
       license='MIT',
       packages=['pypavlok'],
-      install_requires=['gattlib>=0.20150805'],
+      install_requires=['gattlib>=0.20150805',
+                        'requests'],
       include_package_data=True,
       zip_safe=False)

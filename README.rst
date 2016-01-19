@@ -42,6 +42,8 @@ Usage
 >>> pavlok.vibrate()
 >>> pavlok.firmware_revision
 '2.4.28'
+>>> pavlok.latest_firmware_revision
+'2.4.41'
 >>> pp.is_connected() #PyPavlok inherits from GATTRequester
 True
 >>> pp.disconnect()

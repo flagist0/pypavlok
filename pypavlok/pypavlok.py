@@ -1,4 +1,5 @@
 import logging
+import requests
 from gattlib import DiscoveryService, GATTRequester
 
 class PyPavlok(GATTRequester):
@@ -100,9 +101,22 @@ class PyPavlok(GATTRequester):
         return self.read_by_handle(self.handles['firmware_revision'])[0]
 
     @property
+    def latest_firmware_revision(self):
+        'Latest available firmware revision'
+        url = 'http://pavlok-mvp.herokuapp.com/api/v1/latest_firmware?hardware_version=%s' % self.hardware_revision
+        r = requests.get(url)
+        assert r.status_code == 200, 'Could not load "%s"!' % url
+        rev = r.json()['version']
+        assert rev, 'Got wrong firmware revision with url "%s"' % url #API accepts any string as hardware revision, but returns null version if something is wrong
+        return rev
+
+    @property
     def hardware_revision(self):
         'Pavlok hardware revision'
-        return self.read_by_handle(self.handles['hardware_revision'])[0]
+        rev = self.read_by_handle(self.handles['hardware_revision'])[0]
+        if rev.startswith('v'):
+            rev = rev[1:]
+        return rev
 
     def _process_args(self, duration_on, duration_off, level=100):
         'Encode parameters into the form suitable for device'
